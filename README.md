@@ -1,56 +1,116 @@
 # Assignment-Metadata-Extractor
 
-A lightweight, locally hosted LLM pipeline that extracts and normalizes unstructured student assignment text into a strict JSON schema using a fine-tuned SmolLM2 model served via Ollama.
+A lightweight pipeline for extracting student assignment metadata from unstructured text into a strict JSON format by fine-tuning a SmolLM2-family base model and exporting an Ollama-ready GGUF model.
 
-## Model
+## Published model
 
-Hugging Face model: https://huggingface.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor
+- Fine-tuned checkpoint (360M variant): https://huggingface.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor
+- Note: the default training script in this repository currently uses `HuggingFaceTB/SmolLM2-135M-Instruct` as the base model.
 
-## Training (Part 1)
+## What this repository contains
 
-This repository includes:
+- `data/generate_dataset.py`  
+  Generates synthetic instruction-tuning examples.
+- `training/train.py`  
+  Fine-tunes `HuggingFaceTB/SmolLM2-135M-Instruct` using Unsloth + LoRA, then exports HF and GGUF artifacts.
+- `training/train.ipynb`  
+  Notebook version of the same training workflow.
 
-- `data/generate_dataset.py`: Generates a diverse synthetic training dataset.
-- `training/train.py`: Fine-tunes `HuggingFaceTB/SmolLM2-135M-Instruct` with Unsloth + LoRA and exports GGUF.
-- `training/train.ipynb`: Jupyter notebook version of the same training pipeline.
+## Tech stack
 
-## Environment Setup (UV)
+- Python 3.10–3.11
+- [uv](https://docs.astral.sh/uv/) for environment + dependency management
+- PyTorch, Hugging Face Datasets, TRL (`SFTTrainer`)
+- Unsloth for efficient LoRA fine-tuning and GGUF export
 
-This project uses **uv** for package management.
+## Prerequisites
+
+- Python 3.10 or 3.11
+- `uv` installed
+- Recommended for training: NVIDIA GPU with CUDA (CPU training is possible but slow)
+
+## Quickstart
+
+### 1) Set up the environment
 
 ```bash
 uv venv
 source .venv/bin/activate   # Linux/macOS
 # .venv\Scripts\activate    # Windows PowerShell
-
 uv sync
 ```
 
-If you want to run the notebook locally:
-
-```bash
-uv run python -m ipykernel install --user --name assignment-metadata-extractor
-```
-
-## Generate Dataset
+### 2) Generate synthetic dataset
 
 ```bash
 uv run python data/generate_dataset.py --size 400 --output data/dataset.json
 ```
 
-## Run Fine-Tuning Script
+### 3) Run fine-tuning
 
 ```bash
 uv run python training/train.py
 ```
 
-Outputs:
+### 4) Produced artifacts
 
-- `./smollm-student-extractor/` (HuggingFace format)
-- `./smollm-student-gguf/model-Q4_K_M.gguf` (Ollama-ready GGUF)
+- `./smollm-student-extractor/` (Hugging Face model/tokenizer)
+- `./smollm-student-gguf/` (GGUF export for Ollama)
 
-## Run Notebook Version
+## Ollama Modelfile
+
+Create a `Modelfile` with the following content:
+
+```text
+FROM hf.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor:Q4_K_M
+
+# Apply the strict instruction template used during training
+TEMPLATE """### Instruction:
+Extract student info as JSON from the following text.
+
+### Input:
+{{ .Prompt }}
+
+### Response:
+"""
+
+# Set the System constraints
+SYSTEM """
+You are a precise student assignment data extractor.
+Output ONLY a valid JSON object. No explanation. No extra text. No markdown.
+Return a JSON object with exactly these keys: "student_number", "student_name", and "assignment_number". All values must be strings extracted from the input text.
+"""
+
+# Turn off creativity
+PARAMETER temperature 0
+
+# Stop generating once the JSON is closed
+PARAMETER stop "}"
+```
+
+Build and run with Ollama:
 
 ```bash
+ollama create assignment-metadata-extractor -f Modelfile
+ollama run assignment-metadata-extractor
+```
+
+## Dataset format
+
+`data/generate_dataset.py` creates a JSON list where each item contains:
+
+- `instruction`
+- `input`
+- `output` (JSON string with keys: `student_number`, `student_name`, `assignment_number`)
+
+## Notebook workflow
+
+```bash
+uv run python -m ipykernel install --user --name assignment-metadata-extractor
 uv run jupyter notebook training/train.ipynb
 ```
+
+## Notes
+
+- `training/train.py` expects `data/dataset.json` to exist.
+- If the dataset file is missing or empty, training exits with a clear error.
