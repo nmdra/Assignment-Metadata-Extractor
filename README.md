@@ -105,14 +105,23 @@ ollama run assignment-metadata-extractor
 - `input`
 - `output` (JSON string with keys: `student_number`, `student_name`, `assignment_number`)
 
-## Notebook workflow
-
-```bash
-uv run python -m ipykernel install --user --name assignment-metadata-extractor
-uv run jupyter notebook training/train.ipynb
-```
 
 ## Notes
 
 - `training/train.py` expects `data/dataset.json` to exist.
 - If the dataset file is missing or empty, training exits with a clear error.
+
+---
+
+[<img src="https://raw.githubusercontent.com/unslothai/unsloth/main/images/unsloth%20made%20with%20love.png" width="200"/>](https://github.com/unslothai/unsloth)
+
+```BibTex
+@misc{nimendra_2026,
+	author       = { Nimendra },
+	title        = { SmolLM2-360M-Assignment-Metadata-Extractor (Revision 0da34e3) },
+	year         = 2026,
+	url          = { https://huggingface.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor },
+	doi          = { 10.57967/hf/8468 },
+	publisher    = { Hugging Face }
+}
+```
