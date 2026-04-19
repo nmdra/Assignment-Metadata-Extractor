@@ -11,6 +11,7 @@ MODEL_NAME = "HuggingFaceTB/SmolLM2-135M-Instruct"
 DATASET_PATH = Path("data/dataset.json")
 HF_OUTPUT_DIR = "./smollm-student-extractor"
 GGUF_OUTPUT_DIR = "smollm-student-gguf"
+MAX_SEQ_LENGTH = 512
 
 
 def load_dataset(path: Path) -> Dataset:
@@ -39,7 +40,7 @@ def main() -> None:
 
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=MODEL_NAME,
-        max_seq_length=512,
+        max_seq_length=MAX_SEQ_LENGTH,
         load_in_4bit=True,
         dtype=None,
     )
@@ -62,7 +63,7 @@ def main() -> None:
         tokenizer=tokenizer,
         train_dataset=dataset,
         dataset_text_field="text",
-        max_seq_length=512,
+        max_seq_length=MAX_SEQ_LENGTH,
         args=TrainingArguments(
             per_device_train_batch_size=4,
             gradient_accumulation_steps=2,
