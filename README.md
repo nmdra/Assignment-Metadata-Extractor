@@ -1,10 +1,10 @@
 # Assignment-Metadata-Extractor
 
-A lightweight pipeline for extracting student assignment metadata from unstructured text into a strict JSON format by fine-tuning `HuggingFaceTB/SmolLM2-135M-Instruct` and exporting an Ollama-ready GGUF model.
+A lightweight pipeline for extracting student assignment metadata from unstructured text into a strict JSON format by fine-tuning a SmolLM2-family base model and exporting an Ollama-ready GGUF model.
 
 ## Published model
 
-- Hugging Face: https://huggingface.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor
+- Fine-tuned checkpoint (360M variant): https://huggingface.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor
 
 ## What this repository contains
 
@@ -24,7 +24,7 @@ A lightweight pipeline for extracting student assignment metadata from unstructu
 
 ## Prerequisites
 
-- Python `>=3.10,<3.12`
+- Python 3.10 or 3.11
 - `uv` installed
 - Recommended for training: NVIDIA GPU with CUDA (CPU training is possible but slow)
 
