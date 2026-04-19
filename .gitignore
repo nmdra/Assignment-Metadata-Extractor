@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+outputs/
+smollm-student-extractor/
+smollm-student-gguf/
+data/dataset.json
