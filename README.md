@@ -1,6 +1,6 @@
 # Assignment-Metadata-Extractor
 
-A lightweight pipeline for extracting student assignment metadata from unstructured text into a strict JSON format by fine-tuning SmolLM2 and exporting an Ollama-ready GGUF model.
+A lightweight pipeline for extracting student assignment metadata from unstructured text into a strict JSON format by fine-tuning `HuggingFaceTB/SmolLM2-135M-Instruct` and exporting an Ollama-ready GGUF model.
 
 ## Published model
 
