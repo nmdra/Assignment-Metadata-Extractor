@@ -16,6 +16,8 @@ GGUF_OUTPUT_DIR = "smollm-student-gguf"
 def load_dataset(path: Path) -> Dataset:
     with path.open(encoding="utf-8") as f:
         raw = json.load(f)
+    if not raw:
+        raise ValueError("Dataset is empty. Add examples to data/dataset.json before training.")
 
     def format_example(ex: dict) -> dict:
         return {
