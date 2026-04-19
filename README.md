@@ -5,6 +5,7 @@ A lightweight pipeline for extracting student assignment metadata from unstructu
 ## Published model
 
 - Fine-tuned checkpoint (360M variant): https://huggingface.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor
+- Note: the default training script in this repository currently uses `HuggingFaceTB/SmolLM2-135M-Instruct` as the base model.
 
 ## What this repository contains
 
