@@ -57,6 +57,44 @@ uv run python training/train.py
 - `./smollm-student-extractor/` (Hugging Face model/tokenizer)
 - `./smollm-student-gguf/` (GGUF export for Ollama)
 
+## Ollama Modelfile
+
+Create a `Modelfile` with the following content:
+
+```text
+FROM hf.co/nimendraai/SmolLM2-360M-Assignment-Metadata-Extractor:Q4_K_M
+
+# Apply the strict instruction template used during training
+TEMPLATE """### Instruction:
+Extract student info as JSON from the following text.
+
+### Input:
+{{ .Prompt }}
+
+### Response:
+"""
+
+# Set the System constraints
+SYSTEM """
+You are a precise student assignment data extractor.
+Output ONLY a valid JSON object. No explanation. No extra text. No markdown.
+Always output exactly: {"student_number":"...","student_name":"...","assignment_number":"..."}
+"""
+
+# Turn off creativity
+PARAMETER temperature 0
+
+# Stop generating once the JSON is closed
+PARAMETER stop "}"
+```
+
+Build and run with Ollama:
+
+```bash
+ollama create assignment-metadata-extractor -f Modelfile
+ollama run assignment-metadata-extractor
+```
+
 ## Dataset format
 
 `data/generate_dataset.py` creates a JSON list where each item contains:
